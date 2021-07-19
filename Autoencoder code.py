@@ -47,6 +47,8 @@ movie_rec_pvt = pd.pivot_table(movie_rec_data, values='rating', index = 'userId'
 movie_rec_pvt.fillna(0,inplace=True)
 movie_rec_pvt.head()
 
+for i = 1
+
 
 train, test = train_test_split(movie_rec_pvt, test_size=0.5)
 train.shape
