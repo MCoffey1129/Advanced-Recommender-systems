@@ -32,17 +32,18 @@ print(movie_lookup)
 
 
 movie_lookup.shape # 58,098 rows and 3 columns
-ratings_train.shape # 198,079 rows and 4 columns
-ratings_test.shape # 1,917 rows and 4 columns (we would normally want a larger test dataset approx 25% of the train dataset)
 movie_lookup.columns # 3 columns are movieId, title and genre
+ratings_train.shape # 198,118 rows and 4 columns
+ratings_test.shape # 1,878 rows and 4 columns (we would normally want a larger test dataset approx 25% of the train dataset)
 
 
-"""Join the tables tables"""
+
+"""Join the tables"""
 movie_rec_tn = pd.merge(ratings_train,movie_lookup,how='left', on=['movieId'])
-movie_rec_tn.shape # 198,079 rows and 6 columns as expected
+movie_rec_tn.shape # 198,118 rows and 6 columns as expected
 
 movie_rec_test = pd.merge(ratings_test,movie_lookup,how='left', on=['movieId'])
-movie_rec_test.shape # 1,917 rows and 6 columns as expected
+movie_rec_test.shape # 1,878 rows and 6 columns as expected
 
 
 
@@ -57,15 +58,16 @@ movie_rec_test_pvt = pd.pivot_table(movie_rec_test, values='rating', index = 'us
 movie_rec_test_pvt.fillna(0,inplace=True)
 movie_rec_test_pvt.head()
 
-a = zeroised_pvt.update(movie_rec_test_pvt)
-a.head()
+movie_rec_test_pvt_fn = zeroised_pvt.combine_first(movie_rec_test_pvt)
+movie_rec_test_pvt_fn.fillna(0,inplace=True)
+movie_rec_test_pvt_fn.iloc[0,:].describe()
+movie_rec_test_pvt_fn.tail()
 
-
-
+movie_rec_test_pvt_fn.head()
 
 """## Getting the number of users and movies"""
-test.shape  # 1012 unique users and 12,699 unique films
-nb_users = 1012
+movie_rec_tn_pvt.shape  # 2025 unique users and 12,699 unique films
+nb_users = 2025
 nb_movies = 12699
 
 
