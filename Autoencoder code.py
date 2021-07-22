@@ -14,7 +14,6 @@ import torch.optim as optim
 import torch.utils.data
 from torch.autograd import Variable
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 
 
 
@@ -27,36 +26,39 @@ from sklearn.model_selection import train_test_split
    update the below code to wherever you have saved the datasets"""
 
 movie_lookup = pd.read_csv(r'files\movies.csv')
-ratings = pd.read_csv(r'files\ratings_reduced.csv')
+ratings_train = pd.read_csv(r'files\ratings_train.csv')
+ratings_test = pd.read_csv(r'files\ratings_test.csv')
 print(movie_lookup)
-ratings.head()
+
 
 movie_lookup.shape # 58,098 rows and 3 columns
+ratings_train.shape # 198,079 rows and 4 columns
+ratings_test.shape # 1,917 rows and 4 columns (we would normally want a larger test dataset approx 25% of the train dataset)
 movie_lookup.columns # 3 columns are movieId, title and genre
-ratings.shape # 199,999 rows and 4 columns
-ratings.columns # columns include userId, movieId (we will join the two tables using this), rating and timestamp
-
-"""Join the two tables"""
-movie_rec_data = pd.merge(ratings,movie_lookup,how='left', on=['movieId'])
-movie_rec_data.shape # 199,999 rows and 6 columns as expected
-movie_rec_data.columns
-movie_rec_data.describe()
 
 
-movie_rec_pvt = pd.pivot_table(movie_rec_data, values='rating', index = 'userId', columns='movieId')
-movie_rec_pvt.fillna(0,inplace=True)
-movie_rec_pvt.head()
+"""Join the tables tables"""
+movie_rec_tn = pd.merge(ratings_train,movie_lookup,how='left', on=['movieId'])
+movie_rec_tn.shape # 198,079 rows and 6 columns as expected
 
-for i = 1
-
-
-train, test = train_test_split(movie_rec_pvt, test_size=0.5)
-train.shape
-test.shape
+movie_rec_test = pd.merge(ratings_test,movie_lookup,how='left', on=['movieId'])
+movie_rec_test.shape # 1,917 rows and 6 columns as expected
 
 
-train_np = train.values
-test_np = test.values
+
+"""Pivot table with each of the users and movies from the train data"""
+movie_rec_tn_pvt = pd.pivot_table(movie_rec_tn, values='rating', index = 'userId', columns='movieId')
+movie_rec_tn_pvt.fillna(0,inplace=True)
+movie_rec_tn_pvt.head()
+
+zeroised_pvt = pd.DataFrame(0, columns=movie_rec_tn_pvt.columns, index=movie_rec_tn_pvt.index)
+
+movie_rec_test_pvt = pd.pivot_table(movie_rec_test, values='rating', index = 'userId', columns='movieId')
+movie_rec_test_pvt.fillna(0,inplace=True)
+movie_rec_test_pvt.head()
+
+a = zeroised_pvt.update(movie_rec_test_pvt)
+a.head()
 
 
 
